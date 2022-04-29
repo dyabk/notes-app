@@ -61,7 +61,7 @@ test("a valid note can be added", async () => {
 
   const contents = response.body.map((r) => r.content);
 
-  expect(response.body).toHaveLength(intitialNotes.length + 1);
+  expect(response.body).toHaveLength(initialNotes.length + 1);
   expect(contents).toContain("async/await simplifies making async calls");
 });
 
