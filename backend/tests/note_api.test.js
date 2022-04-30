@@ -6,21 +6,6 @@ const api = supertest(app);
 
 const Note = require("../models/note");
 
-/*
-const initialNotes = [
-  {
-    content: "HTML is easy",
-    date: new Date(),
-    important: false,
-  },
-  {
-    content: "Browser can execute only JavaScript",
-    date: new Date(),
-    important: true,
-  },
-];
-*/
-
 beforeEach(async () => {
   await Note.deleteMany({});
   await Note.insertMany(helper.initialNotes);
@@ -63,6 +48,20 @@ describe("viewing a specific note", () => {
     const processedNoteToView = JSON.parse(JSON.stringify(noteToView));
 
     expect(resultNote.body).toEqual(processedNoteToView);
+  });
+
+  test("fails with statuscode 404 if note does not exist", async () => {
+    const validNonexistingId = await helper.nonExistingId();
+
+    console.log(validNonexistingId);
+
+    await api.get(`/api/notes/${validNonexistingId}`).expect(404);
+  });
+
+  test("fails with statuscode 400 if id is invalid", async () => {
+    const invalidId = "5a3d5da59070081a82a3445";
+
+    await api.get(`/api/notes/${invalidId}`).expect(400);
   });
 });
 
