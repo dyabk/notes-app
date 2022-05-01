@@ -60,3 +60,7 @@ describe("when there is initially one user in db", () => {
     expect(usersAtEnd).toEqual(usersAtStart);
   });
 });
+
+afterAll(() => {
+  mongoose.connection.close();
+});
