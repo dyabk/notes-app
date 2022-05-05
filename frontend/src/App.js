@@ -44,6 +44,8 @@ const App = (props) => {
         password,
       });
 
+      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
+
       noteService.setToken(user.token);
       setUser(user);
       setUsername("");
