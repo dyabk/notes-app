@@ -98,6 +98,7 @@ const App = (props) => {
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
+      <button type="submit">login</button>
     </form>
   );
 
@@ -115,16 +116,14 @@ const App = (props) => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {
-        (user = null ? (
-          loginForm()
-        ) : (
-          <div>
-            <p>{user.name} logged-in</p>
-            {noteForm()}
-          </div>
-        ))
-      }
+      {user === null ? (
+        loginForm()
+      ) : (
+        <div>
+          <p>{user.name} logged-in</p>
+          {noteForm()}
+        </div>
+      )}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
