@@ -11,6 +11,7 @@ const App = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -35,7 +36,20 @@ const App = (props) => {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    console.log("logging in with", username, password);
+    
+    try {
+      const user = await loginService.login({
+        username, password
+      })
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (exception) { 
+      setErrorMessage('Wrong credentials');
+      setTimeout(() => { 
+        setErrorMessage(null)
+      }, 5000)
+    }
   };
 
   const handleNoteChange = (event) => {
