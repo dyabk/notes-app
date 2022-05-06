@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import Footer from "./components/Footer";
 import LoginForm from "./components/LoginForm";
 import Note from "./components/Note";
+import NoteForm from "./components/NoteForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import noteService from "./services/notes";
 import loginService from "./services/login";
 
@@ -101,34 +103,26 @@ const App = (props) => {
       });
   };
 
-  const loginForm = () => {
-    const hideWhenVisible = { display: loginVisible ? "none" : "" };
-    const showWhenVisible = { display: loginVisible ? "" : "none" };
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>log in</button>
-        </div>
-        <div style={showWhenVisible}>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-          <button onClick={() => setLoginVisible(false)}>cancel</button>
-        </div>
-      </div>
-    );
-  };
+  const loginForm = () => (
+    <Togglable buttonLabel="login">
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>
+  );
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type="submit">save</button>
-    </form>
+    <Togglable buttonLabel="new note">
+      <NoteForm
+        onSubmit={addNote}
+        value={newNote}
+        handleChange={handleNoteChange}
+      />
+    </Togglable>
   );
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
@@ -142,8 +136,10 @@ const App = (props) => {
         loginForm()
       ) : (
         <div>
-          <p>{user.name} logged-in</p>
-          <button onClick={handleLogout}>log out</button>
+          <p>
+            {user.name} logged-in
+            <button onClick={handleLogout}>log out</button>
+          </p>
           {noteForm()}
         </div>
       )}
