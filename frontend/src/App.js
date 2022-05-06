@@ -31,6 +31,7 @@ const App = (props) => {
   }, []);
 
   const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility();
     noteService
       .create(noteObject)
       .then((returnedNote) => {
@@ -79,7 +80,7 @@ const App = (props) => {
   );
 
   const noteForm = () => (
-    <Togglable buttonLabel="new note">
+    <Togglable buttonLabel="new note" ref={noteFormRef}>
       <NoteForm createNote={addNote} />
     </Togglable>
   );
