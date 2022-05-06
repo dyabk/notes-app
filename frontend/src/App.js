@@ -67,6 +67,14 @@ const App = (props) => {
     }
   };
 
+  const handleLogout = async (event) => {
+    event.preventDefault();
+
+    window.localStorage.removeItem("loggedNoteappUser");
+    noteService.setToken(null);
+    setUser(null);
+  };
+
   const handleNoteChange = (event) => {
     setNewNote(event.target.value);
   };
@@ -134,6 +142,7 @@ const App = (props) => {
       ) : (
         <div>
           <p>{user.name} logged-in</p>
+          <button onClick={handleLogout}>log out</button>
           {noteForm()}
         </div>
       )}
