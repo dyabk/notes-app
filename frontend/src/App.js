@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./components/Footer";
+import LoginForm from "./components/LoginForm";
 import Note from "./components/Note";
 import Notification from "./components/Notification";
 import noteService from "./services/notes";
@@ -70,7 +71,7 @@ const App = (props) => {
   const handleLogout = async (event) => {
     event.preventDefault();
 
-    window.localStorage.removeItem("loggedNoteappUser");
+    window.localStorage.clear();
     noteService.setToken(null);
     setUser(null);
   };
