@@ -25,7 +25,7 @@ notesRouter.get("/:id", async (request, response) => {
   }
 });
 
-notesRouter.post("/", async (request, response) => {
+notesRouter.post("/", async (request, response, next) => {
   const body = request.body;
 
   const token = getTokenFrom(request);
@@ -44,7 +44,11 @@ notesRouter.post("/", async (request, response) => {
 
   const savedNote = await note.save();
   user.notes = user.notes.concat(savedNote._id);
-  await user.save();
+  try {
+    await user.save();
+  } catch (error) {
+    next(error);
+  }
 
   response.json(savedNote);
 });
