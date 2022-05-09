@@ -104,7 +104,7 @@ const App = (props) => {
       <LoginForm
         handlePasswordChange={handlePasswordChange}
         handleUsernameChange={handleUsernameChange}
-        handleLogin={handleLogin}
+        handleSubmit={handleLogin}
         password={password}
         username={username}
       />
