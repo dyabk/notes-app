@@ -61,12 +61,28 @@ notesRouter.delete("/:id", async (request, response) => {
 notesRouter.put("/:id", async (request, response) => {
   const body = request.body;
 
+  const token = getTokenFrom(request);
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token missing or invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+
   const note = {
     content: body.content,
     important: body.important,
   };
 
-  await Note.findByIdAndUpdate(request.params.id, note, { new: true });
+  const updatedNote = await Note.findByIdAndUpdate(request.params.id, note, {
+    new: true,
+  });
+
+  try {
+    await user.save();
+  } catch (error) {
+    next(error);
+  }
+
   response.json(updatedNote);
 });
 

@@ -1,33 +1,10 @@
-import { useState } from "react";
-import loginService from "../services/login";
-import noteService from "../services/notes";
-
-const LoginForm = (props) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleUsernameChange = ({ target }) => setUsername(target.value);
-  const handlePasswordChange = ({ target }) => setPassword(target.value);
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
-      noteService.setToken(user.token);
-      props.setUser(user);
-    } catch (exception) {
-      props.setErrorMessage("Wrong credentials");
-      setTimeout(() => {
-        props.setErrorMessage(null);
-      }, 5000);
-    }
-  };
-
+const LoginForm = ({
+  handleLogin,
+  handlePasswordChange,
+  handleUsernameChange,
+  password,
+  username,
+}) => {
   return (
     <div>
       <h2>Login</h2>

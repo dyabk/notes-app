@@ -6,11 +6,14 @@ import NoteForm from "./components/NoteForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import noteService from "./services/notes";
+import loginService from "./services/login";
 
 const App = (props) => {
   const [notes, setNotes] = useState([]);
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
   const noteFormRef = useRef();
@@ -30,6 +33,16 @@ const App = (props) => {
     }
   }, []);
 
+  const handleUsernameChange = ({ target }) => setUsername(target.value);
+  const handlePasswordChange = ({ target }) => setPassword(target.value);
+
+  const handleNotification = (notification) => {
+    setErrorMessage(notification);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 5000);
+  };
+
   const addNote = (noteObject) => {
     noteFormRef.current.toggleVisibility();
     noteService
@@ -38,17 +51,12 @@ const App = (props) => {
         setNotes(notes.concat(returnedNote));
       })
       .catch((error) => {
-        setErrorMessage(error.response.data.error);
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        handleNotification(error.response.data.error);
       });
   };
 
-  const handleLogout = async (event) => {
-    event.preventDefault();
-
-    window.localStorage.clear();
+  const handleLogout = () => {
+    window.localStorage.removeItem("loggedNoteappUser");
     noteService.setToken(null);
     setUser(null);
   };
@@ -73,9 +81,33 @@ const App = (props) => {
       });
   };
 
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      const user = await loginService.login({
+        username,
+        password,
+      });
+      noteService.setToken(user.token);
+      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
+      setUser(user);
+      setUsername("");
+      setPassword("");
+    } catch (exception) {
+      handleNotification("Wrong credentials");
+    }
+  };
+
   const loginForm = () => (
     <Togglable buttonLabel="login">
-      <LoginForm setUser={setUser} setErrorMessage={setErrorMessage} />
+      <LoginForm
+        handlePasswordChange={handlePasswordChange}
+        handleUsernameChange={handleUsernameChange}
+        handleLogin={handleLogin}
+        password={password}
+        username={username}
+      />
     </Togglable>
   );
 
@@ -98,7 +130,9 @@ const App = (props) => {
         <div>
           <p>
             {user.name} logged-in
-            <button onClick={handleLogout}>log out</button>
+            <button type="button" onClick={handleLogout}>
+              log out
+            </button>
           </p>
           {noteForm()}
         </div>
