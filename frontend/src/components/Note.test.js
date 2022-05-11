@@ -15,7 +15,8 @@ test("renders content", () => {
   //screen.debug();
 
   const element = screen.getByText(
-    "Component testing is done with react-testing-library"
+    "Component testing is done with react-testing-library",
+    { exact: false }
   );
   //screen.debug(element);
 
@@ -32,6 +33,18 @@ test("renders content", () => {
     "Component testing is done with react-testing-library"
   );
   */
+});
+
+test("does not render this", () => {
+  const note = {
+    content: "This is a reminder",
+    important: true,
+  };
+
+  render(<Note note={note} />);
+
+  const element = screen.queryByText("do not want this thing to be rendered");
+  expect(element).toBeNull();
 });
 
 test("clicking the button calls event handler once", async () => {
