@@ -50,8 +50,8 @@ const App = (props) => {
       .then((returnedNote) => {
         setNotes(notes.concat(returnedNote));
       })
-      .catch((error) => {
-        handleNotification(error.response.data.error);
+      .catch(() => {
+        handleNotification("Invalid input");
       });
   };
 
@@ -71,13 +71,7 @@ const App = (props) => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
       })
       .catch((error) => {
-        setErrorMessage(
-          `Note '${note.content}' was already removed from server`
-        );
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-        setNotes(notes.filter((n) => n.id !== id));
+        handleNotification(`Error: Can't update the note: '${note.content}'`);
       });
   };
 
