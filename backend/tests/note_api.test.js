@@ -1,19 +1,35 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const helper = require("./test_helper");
+const bcrypt = require("bcrypt");
 const app = require("../app");
 const api = supertest(app);
 
 const Note = require("../models/note");
+const User = require("../models/user");
 
 beforeEach(async () => {
   await Note.deleteMany({});
   await Note.insertMany(helper.initialNotes);
 });
 
+let token = null;
+beforeAll(async () => {
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash("sakret", 10);
+  const user = new User({ username: "root", name: "Superuser", passwordHash });
+
+  await user.save();
+
+  const response = await api
+    .post("/api/login")
+    .send({ username: "root", password: "sakret" });
+  token = response.body.token;
+});
+
 describe("when there are initially some notes saved", () => {
   test("notes are returned as json", async () => {
-    console.log("entered test");
     await api
       .get("/api/notes")
       .expect(200)
@@ -52,15 +68,11 @@ describe("viewing a specific note", () => {
 
   test("fails with statuscode 404 if note does not exist", async () => {
     const validNonexistingId = await helper.nonExistingId();
-
-    console.log(validNonexistingId);
-
     await api.get(`/api/notes/${validNonexistingId}`).expect(404);
   });
 
   test("fails with statuscode 400 if id is invalid", async () => {
     const invalidId = "5a3d5da59070081a82a3445";
-
     await api.get(`/api/notes/${invalidId}`).expect(400);
   });
 });
@@ -74,6 +86,7 @@ describe("addition of a new note", () => {
 
     await api
       .post("/api/notes")
+      .set("Authorization", "bearer " + token)
       .send(newNote)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -90,7 +103,11 @@ describe("addition of a new note", () => {
       important: true,
     };
 
-    await api.post("/api/notes").send(newNote).expect(400);
+    await api
+      .post("/api/notes")
+      .set("Authorization", "bearer " + token)
+      .send(newNote)
+      .expect(400);
 
     const notesAtEnd = await helper.notesInDb();
 
@@ -98,7 +115,7 @@ describe("addition of a new note", () => {
   });
 });
 
-describe("deletion of a node", () => {
+describe("deletion of a note", () => {
   test("succeeds with status code 204 if id is invalid", async () => {
     const notesAtStart = await helper.notesInDb();
     const noteToDelete = notesAtStart[0];
