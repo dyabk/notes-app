@@ -10,6 +10,15 @@ describe("Note app", function () {
     cy.visit("http://localhost:3000");
   });
 
+  it.only("login fails with wrong password", function () {
+    cy.contains("login").click();
+    cy.get("#username").type("dyabkevich");
+    cy.get("#password").type("wrong");
+    cy.get("button-login").click();
+
+    cy.contains("wrong credentials");
+  });
+
   it("front page can be opened", function () {
     cy.contains("Notes");
     cy.contains(
@@ -43,6 +52,19 @@ describe("Note app", function () {
       cy.get("input").type("a note created by cypress");
       cy.contains("save").click();
       cy.contains("a note created by cypress");
+    });
+
+    describe("and a note exists", function () {
+      beforeEach(function () {
+        cy.contains("new note").click();
+        cy.get("input").type("another note cypress");
+        cy.contains("save").click();
+      });
+
+      it("it can be made important", function () {
+        cy.contains("another note cypress").contains("make important").click();
+        cy.contains("another note cypress").contains("make not important");
+      });
     });
   });
 });
