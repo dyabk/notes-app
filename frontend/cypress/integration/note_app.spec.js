@@ -46,10 +46,7 @@ describe("Note app", function () {
 
   describe("when logged in", function () {
     beforeEach(function () {
-      cy.contains("login").click();
-      cy.get("input:first").type("dyabkevich");
-      cy.get("input:last").type("elfdal12");
-      cy.get("#button-login").click();
+      cy.login({ username: "dyabkevich", password: "elfdal12" });
     });
 
     it("a new note can be created", function () {
