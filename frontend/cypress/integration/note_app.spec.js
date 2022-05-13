@@ -65,8 +65,15 @@ describe("Note app", function () {
       });
 
       it("it can be made important", function () {
-        cy.contains("another note cypress").contains("make important").click();
-        cy.contains("another note cypress").contains("make not important");
+        cy.contains("another note cypress")
+          .parent()
+          .find("button")
+          .contains("make important")
+          .click();
+        cy.contains("another note cypress")
+          .parent()
+          .find("button")
+          .contains("make not important");
       });
 
       describe("and several notes exist", function () {
