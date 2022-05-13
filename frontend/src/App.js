@@ -123,7 +123,7 @@ const App = (props) => {
       ) : (
         <div>
           <p>
-            {user.name} logged-in
+            {user.name} logged in
             <button type="button" onClick={handleLogout}>
               log out
             </button>
