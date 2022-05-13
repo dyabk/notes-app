@@ -1,5 +1,12 @@
 describe("Note app", function () {
   beforeEach(function () {
+    cy.request("POST", "http://localhost:3001/api/testing/reset");
+    const user = {
+      name: "Dimitri Yabkevich",
+      username: "dyabkevich",
+      password: "elfdal12",
+    };
+    cy.request("POST", "http://localhost:3001/api/users", user);
     cy.visit("http://localhost:3000");
   });
 
