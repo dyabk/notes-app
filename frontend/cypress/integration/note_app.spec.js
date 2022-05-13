@@ -10,15 +10,6 @@ describe("Note app", function () {
     cy.visit("http://localhost:3000");
   });
 
-  it.only("login fails with wrong password", function () {
-    cy.contains("login").click();
-    cy.get("#username").type("dyabkevich");
-    cy.get("#password").type("wrong");
-    cy.get("button-login").click();
-
-    cy.contains("wrong credentials");
-  });
-
   it("front page can be opened", function () {
     cy.contains("Notes");
     cy.contains(
@@ -37,6 +28,20 @@ describe("Note app", function () {
     cy.get("#button-login").click();
 
     cy.contains("Dimitri Yabkevich logged in");
+  });
+
+  it("login fails with wrong password", function () {
+    cy.contains("login").click();
+    cy.get("#username").type("dyabkevich");
+    cy.get("#password").type("wrong");
+    cy.get("#button-login").click();
+
+    cy.get(".error")
+      .should("contain", "Wrong credentials")
+      .and("have.css", "color", "rgb(255, 0, 0)")
+      .and("have.css", "border-style", "solid");
+
+    cy.get("html").should("not.contain", "Dimitri Yabkevich logged in");
   });
 
   describe("when logged in", function () {
